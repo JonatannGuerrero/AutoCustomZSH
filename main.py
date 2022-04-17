@@ -4,6 +4,8 @@
 
 import os, time
 from sys import stdout
+import signal
+import sys
 
 # Colores
 
@@ -35,6 +37,11 @@ def printYellow(text):
     print(text)
     stdout.write(WHITE)
 
+def printWhite(text):
+    WHITE= "\033[1;37m"    
+    stdout.write(WHITE)
+    print(text)
+
 banner = """
 
                       █████╗ ██╗   ██╗████████╗ ██████╗                        
@@ -52,26 +59,31 @@ banner = """
   ╚═════╝ ╚═════╝ ╚══════╝   ╚═╝    ╚═════╝ ╚═╝     ╚═╝╚══════╝╚══════╝╚═╝  ╚═╝©
                                 TheHackNotes.com
 """
-
+# Detener procesos
+def signal_handler(sig, frame):
+    printBlue(banner) 
+    printRed("\n【✘】Procesos cancelados")
+    time.sleep(1)
+    printYellow("\n【★】Saliendo ...\n")    
+    sys.exit(0)
 
 # Menu de opciones 
 def menu():  
     printBlue(banner)  
     print("【1】 » Instalar requerimientos necesarios")
-    print("【2】 » Instalar ZSH")
-    print("【3】 » Instalar plugins ZSH") # ZSH-syntax-highlighting, ZSH-Sudo, ZSH-autosuggestions
-    print("【4】 » Instalar LSD, BAT y FZF")
-    print("【5】 » Instalar Ranger")
-    print("【6】 » Configurar ZSH por defecto")
+    print("【2】 » Instalar y configurar ZSH")    
+    print("【4】 » Instalar plugins ZSH") # ZSH-syntax-highlighting, ZSH-Sudo, ZSH-autosuggestions
+    print("【5】 » Instalar LSD, BAT y FZF")
+    print("【6】 » Instalar Ranger")    
     print("【7】 » Instalar PowerLevel10k")
     print("【8】 » Instalar todo")
     print("【9】 » Salir")
 
     option = input("\n ➤ ") 
     if option=="1":
-        printGreen("\n【★】Instalando requerimientos necesarios ...")
+        Option1()             
     elif option=="2": 
-        printGreen("\n【★】Instalando ZSH ...")
+        Option2()        
     elif option=="3":
         printGreen("\n【★】Instalando plugins ZSH ...")
     elif option=="4":
@@ -85,43 +97,53 @@ def menu():
     elif option=="8":
         printGreen("\n【★】Personalizando todo ....")
     elif option=="9":
-        printYellow("\n【★】Saliendo ...")
+        printYellow("\n【★】Saliendo ...\n")
     else:
         os.system("clear")
         printBlue(banner)
-        printRed("\n【★】Opción invalida")
-        time.sleep(0.5)
-        printRed("\n【★】Intente nuevamente")        
-        time.sleep(1.3)
+        printRed("\n【✘】Opción invalida")
+        time.sleep(0.8)
+        printYellow("\n【!】Intente nuevamente")        
+        time.sleep(1.5)
         os.system("clear")
         menu()        
 
 
 # Opción 1 Requerimientos
 def Option1():
-    print("【★】")
+    os.system("clear")
+    printBlue(banner)
+    printGreen("\n【!】Instalando requerimientos necesarios ...")
+    time.sleep(1)
+    printWhite("【!】Obteniendo paquetes ...")
+    os.system("sudo apt-get update -y")    
+    os.system("sudo apt install git python3-sphinx  -y")
+    printGreen("\n【✔】 Requetimientos instalados correctamente") 
+    time.sleep(1.5)    
+    menu()
+
+# Opción 2 Instalando ZSH | Shell por defecto
+def Option2():
+    os.system("clear")
+    printBlue(banner)    
+    printWhite("【!】Obteniendo paquetes ...")
+    os.system("sudo apt install zsh -y ") # Para Mac > "brew install zsh"
+    os.system("sudo chsh -s $(which zsh)") # Cambia la Shell
+    os.system("cp tools/zsh_conf ~/.zshrc")
+    printGreen("\n【✔】 ZSH instalada y configurada correctamente")     
+    time.sleep(1.5)    
+    menu()
 
 
-
-
-if __name__ == '__main__':
-    id = os.getuid()    
-    if id == 0:        
-        print("[!] No hay que ser root para ejecutar la herramienta")
-        
-    else:        
+if __name__ == '__main__': 
+    signal.signal(signal.SIGINT, signal_handler)     
+    id = os.getuid()   
+    if id == 0:
         menu()
-        
+    else:
+        printBlue(banner)
+        printYellow("\n【!】La herramineta requiere ejecutarse como root")
+        time.sleep(0.5)         
+        printRed("\n【✘】Intente nuevamente como root")
+        time.sleep(1.3)
 
-
-
-
-
-
-# PASOS
-
-# 1 Actualizar los paquetes del sistemas python3 git
-# 2 instalar zsh (" sudo apt install zsh -y ")
-
-
-# Instalamos lsd y bat 
