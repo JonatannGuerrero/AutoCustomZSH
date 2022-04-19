@@ -72,18 +72,24 @@ def menu():
     printBlue(banner)  
     print("【1】 » Instalar requerimientos necesarios")
     print("【2】 » Instalar y configurar ZSH")    
-    print("【4】 » Instalar plugins ZSH") # ZSH-syntax-highlighting, ZSH-Sudo, ZSH-autosuggestions
-    print("【5】 » Instalar LSD, BAT y FZF")
-    print("【6】 » Instalar Ranger")    
-    print("【7】 » Instalar PowerLevel10k")
-    print("【8】 » Instalar todo")
-    print("【9】 » Salir")
+    print("【3】 » Instalar plugins ZSH") # ZSH-syntax-highlighting, ZSH-Sudo, ZSH-autosuggestions
+    print("【4】 » Instalar LSD, BAT y FZF")
+    print("【5】 » Instalar Ranger")    
+    print("【6】 » Instalar PowerLevel10k")
+    print("【7】 » Instalar todo")
+    print("【8】 » Salir")
 
     option = input("\n ➤ ") 
     if option=="1":
-        Option1()             
+        os.system("clear")
+        printBlue(banner)
+        Option1()
+        menu()            
     elif option=="2": 
-        Option2()        
+        os.system("clear")
+        printBlue(banner)
+        Option2()  
+        menu()      
     elif option=="3":
         printGreen("\n【★】Instalando plugins ZSH ...")
     elif option=="4":
@@ -110,29 +116,38 @@ def menu():
 
 
 # Opción 1 Requerimientos
-def Option1():
-    os.system("clear")
-    printBlue(banner)
+def Option1():    
     printGreen("\n【!】Instalando requerimientos necesarios ...")
     time.sleep(1)
     printWhite("【!】Obteniendo paquetes ...")
     os.system("sudo apt-get update -y")    
     os.system("sudo apt install git python3-sphinx  -y")
     printGreen("\n【✔】 Requetimientos instalados correctamente") 
-    time.sleep(1.5)    
-    menu()
+    time.sleep(1.5) 
+
 
 # Opción 2 Instalando ZSH | Shell por defecto
 def Option2():
-    os.system("clear")
-    printBlue(banner)    
     printWhite("【!】Obteniendo paquetes ...")
-    os.system("sudo apt install zsh -y ") # Para Mac > "brew install zsh"
-    os.system("sudo chsh -s $(which zsh)") # Cambia la Shell
-    os.system("cp tools/zsh_conf ~/.zshrc")
-    printGreen("\n【✔】 ZSH instalada y configurada correctamente")     
+    os.system("sudo apt install zsh -y ") # Para Mac > "brew install zsh" 
+    printGreen("【✔】 ZSH instalada")
+    time.sleep(1.5) 
+    os.system("sudo cp tools/zsh_conf ~/.zshrc")
+    printYellow("【!】 Configurando ZSH 1/2 ...")
+    time.sleep(1.5)
+    user=os.environ['SUDO_USER']
+    comand="sudo cp tools/zsh_conf /home/"+user+"/.zshrc"    
+    os.system(comand)    
+    comand="usermod --shell /usr/bin/zsh "+user    
+    os.system(comand)    
+    os.system("sudo chsh -s $(which zsh)")
+    comand="ln -s -f /home/"+user+"/.zshrc ~/.zshrc"
+    os.system(comand)  
+    printYellow("【!】 Configurando ZSH 2/2 ... Done") 
+    time.sleep(1.5)
+    printGreen("【✔】 ZSH instalada y configurada correctamente")     
     time.sleep(1.5)    
-    menu()
+
 
 
 if __name__ == '__main__': 

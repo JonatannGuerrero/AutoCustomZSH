@@ -86,18 +86,18 @@ function rmk(){
 source ~/powerlevel10k/powerlevel10k.zsh-theme
 
 #Alias
-alias cat='/bin/batcat'
-alias catn='/bin/cat'
-alias catnl='/bin/bat --paging=never'
+#alias cat='/bin/batcat'
+#alias catn='/bin/cat'
+#alias catnl='/bin/bat --paging=never'
 
-# Ejecutar VSCode
+# Ejecutar VSCode en WSL (Solo si no funciona el comando code)
 # alias code='/mnt/c/Users/'Usuario'/AppData/local/Programs/Microsoft\ VS\ Code/bin/code'
 
-alias ll='lsd -lh --group-dirs=first'
-alias la='lsd -a --group-dirs=first'
-alias l='lsd --group-dirs=first'
-alias lla='lsd -lha --group-dirs=first'
-alias ls='lsd --group-dirs=first'
+#alias ll='lsd -lh --group-dirs=first'
+#alias la='lsd -a --group-dirs=first'
+#alias l='lsd --group-dirs=first'
+#alias lla='lsd -lha --group-dirs=first'
+#alias ls='lsd --group-dirs=first'
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
