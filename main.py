@@ -91,7 +91,10 @@ def menu():
         Option2()  
         menu()      
     elif option=="3":
-        printGreen("\n【★】Instalando plugins ZSH ...")
+        os.system("clear")
+        printBlue(banner)
+        Option3()  
+        menu()
     elif option=="4":
         printGreen("\n【★】Instalando LSD, BAT y FZF ...")
     elif option=="5":
@@ -117,13 +120,16 @@ def menu():
 
 # Opción 1 Requerimientos
 def Option1():    
-    printGreen("\n【!】Instalando requerimientos necesarios ...")
-    time.sleep(1)
     printWhite("【!】Obteniendo paquetes ...")
+    time.sleep(1)
+    printWhite("【!】Instalando requerimientos necesarios ...")
+    time.sleep(1)
+    #os.system("localectl set-x11-keymap es") 
     os.system("sudo apt-get update -y")    
     os.system("sudo apt install git python3-sphinx  -y")
-    printGreen("\n【✔】 Requetimientos instalados correctamente") 
+    printGreen("【✔】 Requetimientos instalados correctamente") 
     time.sleep(1.5) 
+    
 
 
 # Opción 2 Instalando ZSH | Shell por defecto
@@ -148,7 +154,18 @@ def Option2():
     printGreen("【✔】 ZSH instalada y configurada correctamente")     
     time.sleep(1.5)    
 
-
+# Instalando plugins ZSH
+def Option3():
+    printWhite("【!】Obteniendo paquetes ...")    
+    os.system("sudo apt install zsh-syntax-highlighting zsh-autosuggestions -y")    
+    os.mkdir('/usr/share/zsh-sudo')
+    user=os.environ['SUDO_USER']
+    comand="chown "+user+":"+user+" /usr/share/zsh-sudo"
+    os.system(comand)
+    comand="wget -P /usr/share/zsh-sudo/ https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/plugins/sudo/sudo.plugin.zsh"
+    os.system(comand)    
+    printGreen("【✔】 Plugins configurados e instados correctamente")
+    time.sleep(1.5) 
 
 if __name__ == '__main__': 
     signal.signal(signal.SIGINT, signal_handler)     
