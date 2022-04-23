@@ -59,6 +59,7 @@ banner = """
   ╚═════╝ ╚═════╝ ╚══════╝   ╚═╝    ╚═════╝ ╚═╝     ╚═╝╚══════╝╚══════╝╚═╝  ╚═╝©
                                 TheHackNotes.com
 """
+user=os.environ['SUDO_USER']
 # Detener procesos
 def signal_handler(sig, frame):
     printBlue(banner) 
@@ -73,9 +74,9 @@ def menu():
     print("【1】 » Instalar requerimientos necesarios")
     print("【2】 » Instalar y configurar ZSH")    
     print("【3】 » Instalar plugins ZSH") # ZSH-syntax-highlighting, ZSH-Sudo, ZSH-autosuggestions
-    print("【4】 » Instalar LSD, BAT y FZF")
-    print("【5】 » Instalar Ranger")    
-    print("【6】 » Instalar PowerLevel10k")
+    print("【4】 » Instalar PowerLevel10k")
+    print("【5】 » Instalar LSD, BAT y FZF")
+    print("【6】 » Instalar Ranger")   
     print("【7】 » Instalar todo")
     print("【8】 » Salir")
 
@@ -96,17 +97,20 @@ def menu():
         Option3()  
         menu()
     elif option=="4":
-        printGreen("\n【★】Instalando LSD, BAT y FZF ...")
+        os.system("clear")
+        printBlue(banner)
+        Option4()  
+        menu()        
     elif option=="5":
+        printGreen("\n【★】Instalando LSD, BAT y FZF ...")
         printGreen("\n【★】Instalando Ranger ...")
     elif option=="6":
         printGreen("\n【★】Configurar ZSH por defecto ....")
     elif option=="7":
         printGreen("\n【★】Instalando PowerLevel10k ....")
     elif option=="8":
-        printGreen("\n【★】Personalizando todo ....")
-    elif option=="9":
         printYellow("\n【★】Saliendo ...\n")
+        printGreen("\n【★】Personalizando todo ....") 
     else:
         os.system("clear")
         printBlue(banner)
@@ -126,7 +130,7 @@ def Option1():
     time.sleep(1)
     #os.system("localectl set-x11-keymap es") 
     os.system("sudo apt-get update -y")    
-    os.system("sudo apt install git python3-sphinx  -y")
+    os.system("sudo apt install git python3-sphinx  -y") # sudo wget https://github.com/icy/pacapt/raw/master/pacman -O /usr/local/bin/pacman sudo chmod 755 /usr/local/bin/pacman
     printGreen("【✔】 Requetimientos instalados correctamente") 
     time.sleep(1.5) 
     
@@ -140,8 +144,7 @@ def Option2():
     time.sleep(1.5) 
     os.system("sudo cp tools/zsh_conf ~/.zshrc")
     printYellow("【!】 Configurando ZSH 1/2 ...")
-    time.sleep(1.5)
-    user=os.environ['SUDO_USER']
+    time.sleep(1.5)    
     comand="sudo cp tools/zsh_conf /home/"+user+"/.zshrc"    
     os.system(comand)    
     comand="usermod --shell /usr/bin/zsh "+user    
@@ -152,20 +155,33 @@ def Option2():
     printYellow("【!】 Configurando ZSH 2/2 ... Done") 
     time.sleep(1.5)
     printGreen("【✔】 ZSH instalada y configurada correctamente")     
-    time.sleep(1.5)    
+    time.sleep(1.5)   
 
 # Instalando plugins ZSH
 def Option3():
     printWhite("【!】Obteniendo paquetes ...")    
     os.system("sudo apt install zsh-syntax-highlighting zsh-autosuggestions -y")    
-    os.mkdir('/usr/share/zsh-sudo')
-    user=os.environ['SUDO_USER']
+    os.mkdir('/usr/share/zsh-sudo')    
     comand="chown "+user+":"+user+" /usr/share/zsh-sudo"
     os.system(comand)
     comand="wget -P /usr/share/zsh-sudo/ https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/plugins/sudo/sudo.plugin.zsh"
     os.system(comand)    
     printGreen("【✔】 Plugins configurados e instados correctamente")
     time.sleep(1.5) 
+
+
+# Instalando PowerLevel10k
+def Option4():
+    printWhite("【!】Obteniendo paquetes ...") 
+    os.system("git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k")
+    comand="sudo git clone --depth=1 https://github.com/romkatv/powerlevel10k.git /home/"+user+"/powerlevel10k"
+    os.system(comand) 
+    os.system("sudo cp tools/p10k_conf ~/.p10k.zsh")
+    comand="sudo cp tools/p10k_conf /home/"+user+"/.p10k.zsh" 
+    os.system(comand)  
+    printGreen("【✔】PowerLevel10k instalada correctamente")
+    time.sleep(1.5)   
+
 
 if __name__ == '__main__': 
     signal.signal(signal.SIGINT, signal_handler)     
