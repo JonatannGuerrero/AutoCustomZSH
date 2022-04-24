@@ -59,7 +59,7 @@ banner = """
   ╚═════╝ ╚═════╝ ╚══════╝   ╚═╝    ╚═════╝ ╚═╝     ╚═╝╚══════╝╚══════╝╚═╝  ╚═╝©
                                 TheHackNotes.com
 """
-user=os.environ['SUDO_USER']
+
 # Detener procesos
 def signal_handler(sig, frame):
     printBlue(banner) 
@@ -75,10 +75,9 @@ def menu():
     print("【2】 » Instalar y configurar ZSH")    
     print("【3】 » Instalar plugins ZSH") # ZSH-syntax-highlighting, ZSH-Sudo, ZSH-autosuggestions
     print("【4】 » Instalar PowerLevel10k")
-    print("【5】 » Instalar LSD, BAT y FZF")
-    print("【6】 » Instalar Ranger")   
-    print("【7】 » Instalar todo")
-    print("【8】 » Salir")
+    print("【5】 » Instalar utilidades")  
+    print("【6】 » Instalar todo")
+    print("【7】 » Salir")
 
     option = input("\n ➤ ") 
     if option=="1":
@@ -102,15 +101,24 @@ def menu():
         Option4()  
         menu()        
     elif option=="5":
-        printGreen("\n【★】Instalando LSD, BAT y FZF ...")
-        printGreen("\n【★】Instalando Ranger ...")
+        os.system("clear")
+        printBlue(banner)
+        Option5()  
+        menu()         
     elif option=="6":
-        printGreen("\n【★】Configurar ZSH por defecto ....")
+        os.system("clear")
+        printBlue(banner)
+        Option1()
+        Option2()
+        Option3()
+        Option4()
+        Option5()
+        printGreen("【★】AutoCustomZSH Done | TheHackNotes.com")  
+        time.sleep(1.5)  
+        printYellow("【★】Saliendo ...") 
+        time.sleep(1) 
     elif option=="7":
-        printGreen("\n【★】Instalando PowerLevel10k ....")
-    elif option=="8":
-        printYellow("\n【★】Saliendo ...\n")
-        printGreen("\n【★】Personalizando todo ....") 
+        printYellow("【★】Saliendo ...")        
     else:
         os.system("clear")
         printBlue(banner)
@@ -127,18 +135,16 @@ def Option1():
     printWhite("【!】Obteniendo paquetes ...")
     time.sleep(1)
     printWhite("【!】Instalando requerimientos necesarios ...")
-    time.sleep(1)
-    #os.system("localectl set-x11-keymap es") 
-    os.system("sudo apt-get update -y")    
-    os.system("sudo apt install git python3-sphinx  -y") # sudo wget https://github.com/icy/pacapt/raw/master/pacman -O /usr/local/bin/pacman sudo chmod 755 /usr/local/bin/pacman
+    time.sleep(1)     
+    os.system("sudo apt-get update -y")
+    os.system("sudo apt upgrade -y")     
+    os.system("sudo apt install git scrub python3-sphinx -y")
     printGreen("【✔】 Requetimientos instalados correctamente") 
     time.sleep(1.5) 
-    
 
-
-# Opción 2 Instalando ZSH | Shell por defecto
+# Opción 2 Instalando ZSH | Shell por defecto | !rmk Lista
 def Option2():
-    printWhite("【!】Obteniendo paquetes ...")
+    printWhite("【!】Obteniendo paquetes ZSH...")
     os.system("sudo apt install zsh -y ") # Para Mac > "brew install zsh" 
     printGreen("【✔】 ZSH instalada")
     time.sleep(1.5) 
@@ -159,7 +165,7 @@ def Option2():
 
 # Instalando plugins ZSH
 def Option3():
-    printWhite("【!】Obteniendo paquetes ...")    
+    printWhite("【!】Obteniendo plugins ZSH ...")    
     os.system("sudo apt install zsh-syntax-highlighting zsh-autosuggestions -y")    
     os.mkdir('/usr/share/zsh-sudo')    
     comand="chown "+user+":"+user+" /usr/share/zsh-sudo"
@@ -172,7 +178,7 @@ def Option3():
 
 # Instalando PowerLevel10k
 def Option4():
-    printWhite("【!】Obteniendo paquetes ...") 
+    printWhite("【!】Obteniendo paquetes PowerLevel10k ...") 
     os.system("git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k")
     comand="sudo git clone --depth=1 https://github.com/romkatv/powerlevel10k.git /home/"+user+"/powerlevel10k"
     os.system(comand) 
@@ -182,13 +188,31 @@ def Option4():
     printGreen("【✔】PowerLevel10k instalada correctamente")
     time.sleep(1.5)   
 
+# Instalando LSD, BAT, FZF, Ranger
+def Option5():
+    printWhite("【!】Obteniendo utilidades ...") 
+    os.system("sudo apt install bat -y")
+    os.system("snap install lsd")    
+    comand="git clone --depth 1 https://github.com/junegunn/fzf.git /home/"+user+"/.fzf" # ctrl+r ó ctrl+t
+    os.system(comand)
+    comand="/home/"+user+"/.fzf/install --all"
+    os.system(comand)    
+    comand="chown -R "+user+":"+user+" /home/"+user+"/.fzf"
+    os.system(comand)    
+    comand="cp ~/.fzf.zsh /home/"+user+"/.fzf.zsh"
+    os.system(comand)        
+    os.system("sudo apt install ranger -y")
+    printGreen("【✔】Utilidades Listas")
+    time.sleep(1.5)
+
 
 if __name__ == '__main__': 
     signal.signal(signal.SIGINT, signal_handler)     
     id = os.getuid()   
     if id == 0:
+        user=os.environ['SUDO_USER']
         menu()
-    else:
+    else:        
         printBlue(banner)
         printYellow("\n【!】La herramineta requiere ejecutarse como root")
         time.sleep(0.5)         

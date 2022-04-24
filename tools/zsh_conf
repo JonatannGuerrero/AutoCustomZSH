@@ -86,9 +86,13 @@ function rmk(){
 
 source ~/powerlevel10k/powerlevel10k.zsh-theme
 
-#Alias
-#alias cat='/bin/batcat'
-#alias catn='/bin/cat'
+# Alias
+
+alias cat='/bin/batcat'
+alias catn='/bin/cat'
+alias ls='/snap/lsd/current/bin/lsd'
+alias lsn='/bin/ls'
+
 #alias catnl='/bin/bat --paging=never'
 
 # Ejecutar VSCode en WSL (Solo si no funciona el comando code)
