@@ -192,7 +192,7 @@ def Option4():
 def Option5():
     printWhite("【!】Obteniendo utilidades ...") 
     os.system("sudo apt install bat -y")
-    os.system("snap install lsd")    
+    os.system("	sudo dpkg -i tools/lsd_0.21.0_amd64.deb")
     comand="git clone --depth 1 https://github.com/junegunn/fzf.git /home/"+user+"/.fzf" # ctrl+r ó ctrl+t
     os.system(comand)
     comand="/home/"+user+"/.fzf/install --all"
