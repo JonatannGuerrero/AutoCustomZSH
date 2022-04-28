@@ -67,8 +67,30 @@ def signal_handler(sig, frame):
     printYellow("\n【★】Saliendo ...\n")    
     sys.exit(0)
 
+# Actualizar Sistema
+def UpdateSystem(): 
+    printBlue(banner)
+    print("【1】 » Actualizar paquetes del sistema (RECOMENDADO)")
+    print("【2】 » Continuar sin actualizar")
+    option = input("\n ➤ ") 
+    if option=="1":
+        return True
+    elif option=="2":
+        printYellow("\n【!】Se continuará sin actualizar")
+        time.sleep(1)
+        printYellow("【!】Si presenta errores en la instalación, actualice el sistema.")
+        time.sleep(2)
+        return False
+    else:
+        printRed("\n【✘】Opción invalida")
+        printYellow("【!】Se continuará sin actualizar")
+        time.sleep(1)
+        printYellow("【!】Si presenta errores en la instalación, actualice el sistema.")
+        time.sleep(2)
+        return False
+
 # Menu de opciones 
-def menu(Actu):  
+def menu():  
     printBlue(banner)  
     print("【1】 » Instalar requerimientos necesarios")
     print("【2】 » Instalar y configurar ZSH")    
@@ -78,6 +100,89 @@ def menu(Actu):
     print("【6】 » Instalar todo")
     print("【7】 » Salir")
 
+# Opción 1 Requerimientos
+def Option1(Actu):    
+    printWhite("【!】Obteniendo paquetes ...")
+    time.sleep(1)        
+    os.system("sudo apt-get update -y")
+    if Actu:
+        printWhite("【!】Actualizando sistema ...")
+        time.sleep(1) 
+        os.system("sudo apt upgrade -y")  
+    else:
+        printYellow("【!】Si presenta errores en la instalación, actualice el sistema.")
+        time.sleep(2)
+    printWhite("【!】Instalando requerimientos necesarios ...")
+    time.sleep(1) 
+    os.system("sudo apt install git scrub python3-sphinx -y")
+    printGreen("【✔】 Requerimientos instalados correctamente") 
+    time.sleep(1.5) 
+
+# Opción 2 Instalando ZSH | Shell por defecto | !rmk Lista
+def Option2():
+    printWhite("【!】Obteniendo paquetes ZSH...")
+    os.system("sudo apt install zsh -y ") # Para Mac > "brew install zsh" 
+    printGreen("【✔】 ZSH instalada")
+    time.sleep(1.5) 
+    os.system("sudo cp tools/zsh_conf ~/.zshrc")
+    printYellow("【!】 Configurando ZSH 1/2 ...")
+    time.sleep(1.5)    
+    comand="sudo cp tools/zsh_conf /home/"+user+"/.zshrc"    
+    os.system(comand)    
+    comand="usermod --shell /usr/bin/zsh "+user    
+    os.system(comand)    
+    os.system("sudo chsh -s $(which zsh)")
+    comand="ln -s -f /home/"+user+"/.zshrc ~/.zshrc"
+    os.system(comand)  
+    printYellow("【!】 Configurando ZSH 2/2 ... Done") 
+    time.sleep(1.5)
+    printGreen("【✔】 ZSH instalada y configurada correctamente")     
+    time.sleep(1.5)   
+
+# Instalando plugins ZSH
+def Option3():
+    printWhite("【!】Obteniendo plugins ZSH ...")    
+    os.system("sudo apt install zsh-syntax-highlighting zsh-autosuggestions -y")    
+    os.mkdir('/usr/share/zsh-sudo')    
+    comand="chown "+user+":"+user+" /usr/share/zsh-sudo"
+    os.system(comand)
+    comand="wget -P /usr/share/zsh-sudo/ https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/plugins/sudo/sudo.plugin.zsh"
+    os.system(comand)    
+    printGreen("【✔】 Plugins configurados e instados correctamente")
+    time.sleep(1.5) 
+
+# Instalando PowerLevel10k
+def Option4():
+    printWhite("【!】Obteniendo paquetes PowerLevel10k ...") 
+    os.system("git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k")
+    comand="sudo git clone --depth=1 https://github.com/romkatv/powerlevel10k.git /home/"+user+"/powerlevel10k"
+    os.system(comand) 
+    os.system("sudo cp tools/p10k_conf ~/.p10k.zsh")
+    comand="sudo cp tools/p10k_conf /home/"+user+"/.p10k.zsh" 
+    os.system(comand)  
+    printGreen("【✔】PowerLevel10k instalada correctamente")
+    time.sleep(1.5)   
+
+# Instalando LSD, BAT, FZF, Ranger
+def Option5():
+    printWhite("【!】Obteniendo utilidades ...") 
+    os.system("sudo apt install bat -y")
+    os.system("sudo dpkg -i tools/lsd_0.21.0_amd64.deb")
+    comand="git clone --depth 1 https://github.com/junegunn/fzf.git /home/"+user+"/.fzf" # ctrl+r ó ctrl+t
+    os.system(comand)
+    comand="/home/"+user+"/.fzf/install --all"
+    os.system(comand)    
+    comand="chown -R "+user+":"+user+" /home/"+user+"/.fzf"
+    os.system(comand)    
+    comand="cp ~/.fzf.zsh /home/"+user+"/.fzf.zsh"
+    os.system(comand)        
+    os.system("sudo apt install ranger -y")
+    printGreen("【✔】Utilidades Listas")
+    time.sleep(1.5)
+
+# Configurancion Ubuntu, Parrot, Kali, WSL
+def Linux(Actu):
+    menu()
     option = input("\n ➤ ") 
     if option=="1":
         os.system("clear")
@@ -126,107 +231,10 @@ def menu(Actu):
         printYellow("\n【!】Intente nuevamente")        
         time.sleep(1.5)
         os.system("clear")
-        menu()        
-
-
-# Opción 1 Requerimientos
-def Option1(Actu):    
-    printWhite("【!】Obteniendo paquetes ...")
-    time.sleep(1)        
-    os.system("sudo apt-get update -y")
-    if Actu:
-        printWhite("【!】Actualizando sistema ...")
-        time.sleep(1) 
-        os.system("sudo apt upgrade -y")  
-    else:
-        printYellow("【!】Si presenta errores en la instalación, actualice el sistema.")
-        time.sleep(1)
-    printWhite("【!】Instalando requerimientos necesarios ...")
-    time.sleep(1) 
-    os.system("sudo apt install git scrub python3-sphinx -y")
-    printGreen("【✔】 Requerimientos instalados correctamente") 
-    time.sleep(1.5) 
-
-# Opción 2 Instalando ZSH | Shell por defecto | !rmk Lista
-def Option2():
-    printWhite("【!】Obteniendo paquetes ZSH...")
-    os.system("sudo apt install zsh -y ") # Para Mac > "brew install zsh" 
-    printGreen("【✔】 ZSH instalada")
-    time.sleep(1.5) 
-    os.system("sudo cp tools/zsh_conf ~/.zshrc")
-    printYellow("【!】 Configurando ZSH 1/2 ...")
-    time.sleep(1.5)    
-    comand="sudo cp tools/zsh_conf /home/"+user+"/.zshrc"    
-    os.system(comand)    
-    comand="usermod --shell /usr/bin/zsh "+user    
-    os.system(comand)    
-    os.system("sudo chsh -s $(which zsh)")
-    comand="ln -s -f /home/"+user+"/.zshrc ~/.zshrc"
-    os.system(comand)  
-    printYellow("【!】 Configurando ZSH 2/2 ... Done") 
-    time.sleep(1.5)
-    printGreen("【✔】 ZSH instalada y configurada correctamente")     
-    time.sleep(1.5)   
-
-# Instalando plugins ZSH
-def Option3():
-    printWhite("【!】Obteniendo plugins ZSH ...")    
-    os.system("sudo apt install zsh-syntax-highlighting zsh-autosuggestions -y")    
-    os.mkdir('/usr/share/zsh-sudo')    
-    comand="chown "+user+":"+user+" /usr/share/zsh-sudo"
-    os.system(comand)
-    comand="wget -P /usr/share/zsh-sudo/ https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/plugins/sudo/sudo.plugin.zsh"
-    os.system(comand)    
-    printGreen("【✔】 Plugins configurados e instados correctamente")
-    time.sleep(1.5) 
-
-
-# Instalando PowerLevel10k
-def Option4():
-    printWhite("【!】Obteniendo paquetes PowerLevel10k ...") 
-    os.system("git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k")
-    comand="sudo git clone --depth=1 https://github.com/romkatv/powerlevel10k.git /home/"+user+"/powerlevel10k"
-    os.system(comand) 
-    os.system("sudo cp tools/p10k_conf ~/.p10k.zsh")
-    comand="sudo cp tools/p10k_conf /home/"+user+"/.p10k.zsh" 
-    os.system(comand)  
-    printGreen("【✔】PowerLevel10k instalada correctamente")
-    time.sleep(1.5)   
-
-# Instalando LSD, BAT, FZF, Ranger
-def Option5():
-    printWhite("【!】Obteniendo utilidades ...") 
-    os.system("sudo apt install bat -y")
-    os.system("sudo dpkg -i tools/lsd_0.21.0_amd64.deb")
-    comand="git clone --depth 1 https://github.com/junegunn/fzf.git /home/"+user+"/.fzf" # ctrl+r ó ctrl+t
-    os.system(comand)
-    comand="/home/"+user+"/.fzf/install --all"
-    os.system(comand)    
-    comand="chown -R "+user+":"+user+" /home/"+user+"/.fzf"
-    os.system(comand)    
-    comand="cp ~/.fzf.zsh /home/"+user+"/.fzf.zsh"
-    os.system(comand)        
-    os.system("sudo apt install ranger -y")
-    printGreen("【✔】Utilidades Listas")
-    time.sleep(1.5)
-
-
-def Linux():
-    printBlue(banner)
-    print("【1】 » Actualizar paquetes del sistema (RECOMENDADO)")
-    print("【2】 » Continuar sin actualizar")
-    option = input("\n ➤ ") 
-    if option=="1":
-        menu(True)
-    elif option=="2":
-        menu(False)
-    else:
-        printRed("\n【✘】Opción invalida")
-        printYellow("【!】Se continuará sin actualizar")
-        time.sleep(1)
-        menu(False)
+        menu()
 
 def MacOS():
+    printBlue(banner)
     printYellow("\n【!】Herramienta para MacOS en construcción ...")
     time.sleep(0.5)
     printYellow("【★】Saliendo ... \n")
@@ -240,7 +248,7 @@ if __name__ == '__main__':
         if platform.system()=='Darwin':
             MacOS()
         elif platform.system()=="Linux":            
-            Linux()
+            Linux(UpdateSystem())
         else:
             printBlue(banner)
             printRed("\n【✘】No se reconoce el sistema operativo \n") 
