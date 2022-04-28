@@ -68,7 +68,7 @@ def signal_handler(sig, frame):
     sys.exit(0)
 
 # Menu de opciones 
-def menu():  
+def menu(Actu):  
     printBlue(banner)  
     print("【1】 » Instalar requerimientos necesarios")
     print("【2】 » Instalar y configurar ZSH")    
@@ -82,7 +82,7 @@ def menu():
     if option=="1":
         os.system("clear")
         printBlue(banner)
-        Option1()
+        Option1(Actu)
         menu()            
     elif option=="2": 
         os.system("clear")
@@ -107,7 +107,7 @@ def menu():
     elif option=="6":
         os.system("clear")
         printBlue(banner)
-        Option1()
+        Option1(Actu)
         Option2()
         Option3()
         Option4()
@@ -130,13 +130,19 @@ def menu():
 
 
 # Opción 1 Requerimientos
-def Option1():    
+def Option1(Actu):    
     printWhite("【!】Obteniendo paquetes ...")
-    time.sleep(1)
-    printWhite("【!】Instalando requerimientos necesarios ...")
-    time.sleep(1)     
+    time.sleep(1)        
     os.system("sudo apt-get update -y")
-    os.system("sudo apt upgrade -y")     
+    if Actu:
+        printWhite("【!】Actualizando sistema ...")
+        time.sleep(1) 
+        os.system("sudo apt upgrade -y")  
+    else:
+        printYellow("【!】Si presenta errores en la instalación, actualice el sistema.")
+        time.sleep(1)
+    printWhite("【!】Instalando requerimientos necesarios ...")
+    time.sleep(1) 
     os.system("sudo apt install git scrub python3-sphinx -y")
     printGreen("【✔】 Requerimientos instalados correctamente") 
     time.sleep(1.5) 
@@ -205,36 +211,57 @@ def Option5():
     time.sleep(1.5)
 
 
+def Linux():
+    printBlue(banner)
+    print("【1】 » Actualizar paquetes del sistema (RECOMENDADO)")
+    print("【2】 » Continuar sin actualizar")
+    option = input("\n ➤ ") 
+    if option=="1":
+        menu(True)
+    elif option=="2":
+        menu(False)
+    else:
+        printRed("\n【✘】Opción invalida")
+        printYellow("【!】Se continuará sin actualizar")
+        time.sleep(1)
+        menu(False)
+
+def MacOS():
+    printYellow("\n【!】Herramienta para MacOS en construcción ...")
+    time.sleep(0.5)
+    printYellow("【★】Saliendo ... \n")
+    time.sleep(1)
+
 if __name__ == '__main__': 
     signal.signal(signal.SIGINT, signal_handler)     
     id = os.getuid()   
     if id == 0:
         user=os.environ['SUDO_USER']        
         if platform.system()=='Darwin':
-            printGreen("ES MACCCC")
+            MacOS()
         elif platform.system()=="Linux":            
-            menu()
+            Linux()
         else:
             printBlue(banner)
             printRed("\n【✘】No se reconoce el sistema operativo \n") 
             time.sleep(0.8)
-            print("【1】 » Linux")
+            print("【1】 » Ubuntu, Parrot, Kali, WSL")
             print("【2】 » MacOS")
             option = input("\n ➤ ") 
             if option=="1":                
-                menu() 
+                Linux()
             elif option=="2":
-                printYellow("\n【!】En construcción")
+                MacOS()
             else:
                 printRed("\n【✘】Opción invalida")
                 time.sleep(0.8)
                 printYellow("【!】Intente nuevamente")
-                printYellow("【★】Saliendo ...") 
+                printYellow("【★】Saliendo ... \n")
                 time.sleep(0.5)
     else:        
         printBlue(banner)
         printYellow("\n【!】La herramienta requiere ejecutarse como root")
         time.sleep(0.5)         
-        printRed("\n【✘】Intente nuevamente como root")
+        printRed("\n【✘】Intente nuevamente como root \n")
         time.sleep(1.3)
 
