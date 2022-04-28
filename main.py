@@ -4,8 +4,7 @@
 
 import os, time
 from sys import stdout
-import signal
-import sys
+import signal, sys, platform
 
 # Colores
 
@@ -118,7 +117,7 @@ def menu():
         printYellow("【★】Saliendo ...") 
         time.sleep(1) 
     elif option=="7":
-        printYellow("【★】Saliendo ...")        
+        printYellow("\n【★】Saliendo ...")        
     else:
         os.system("clear")
         printBlue(banner)
@@ -139,7 +138,7 @@ def Option1():
     os.system("sudo apt-get update -y")
     os.system("sudo apt upgrade -y")     
     os.system("sudo apt install git scrub python3-sphinx -y")
-    printGreen("【✔】 Requetimientos instalados correctamente") 
+    printGreen("【✔】 Requerimientos instalados correctamente") 
     time.sleep(1.5) 
 
 # Opción 2 Instalando ZSH | Shell por defecto | !rmk Lista
@@ -192,7 +191,7 @@ def Option4():
 def Option5():
     printWhite("【!】Obteniendo utilidades ...") 
     os.system("sudo apt install bat -y")
-    os.system("	sudo dpkg -i tools/lsd_0.21.0_amd64.deb")
+    os.system("sudo dpkg -i tools/lsd_0.21.0_amd64.deb")
     comand="git clone --depth 1 https://github.com/junegunn/fzf.git /home/"+user+"/.fzf" # ctrl+r ó ctrl+t
     os.system(comand)
     comand="/home/"+user+"/.fzf/install --all"
@@ -210,11 +209,31 @@ if __name__ == '__main__':
     signal.signal(signal.SIGINT, signal_handler)     
     id = os.getuid()   
     if id == 0:
-        user=os.environ['SUDO_USER']
-        menu()
+        user=os.environ['SUDO_USER']        
+        if platform.system()=='Darwin':
+            printGreen("ES MACCCC")
+        elif platform.system()=="Linux":            
+            menu()
+        else:
+            printBlue(banner)
+            printRed("\n【✘】No se reconoce el sistema operativo \n") 
+            time.sleep(0.8)
+            print("【1】 » Linux")
+            print("【2】 » MacOS")
+            option = input("\n ➤ ") 
+            if option=="1":                
+                menu() 
+            elif option=="2":
+                printYellow("\n【!】En construcción")
+            else:
+                printRed("\n【✘】Opción invalida")
+                time.sleep(0.8)
+                printYellow("【!】Intente nuevamente")
+                printYellow("【★】Saliendo ...") 
+                time.sleep(0.5)
     else:        
         printBlue(banner)
-        printYellow("\n【!】La herramineta requiere ejecutarse como root")
+        printYellow("\n【!】La herramienta requiere ejecutarse como root")
         time.sleep(0.5)         
         printRed("\n【✘】Intente nuevamente como root")
         time.sleep(1.3)
