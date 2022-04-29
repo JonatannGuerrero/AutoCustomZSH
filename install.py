@@ -257,7 +257,7 @@ if __name__ == '__main__':
             print("【2】 » MacOS")
             option = input("\n ➤ ") 
             if option=="1":                
-                Linux()
+                Linux(UpdateSystem())
             elif option=="2":
                 MacOS()
             else:
