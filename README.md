@@ -3,7 +3,7 @@ AutoCustomZSH es un script que automatiza e integra diferentes herramientas disp
 *[Más información sobre AutoCustomZSH](https://blog.thehacknotes.com/p/personalizaci%C3%B3n-de-la-terminal/)*
 ## Instalación
 
-Para hacer uso del script se debe ejecutar como root, ya que realiza cambios en el sistema:  ↴
+Para hacer uso del script se debe ejecutar como root, ya que este realiza cambios en el sistema:  ↴
 
 ```bash 
 git clone https://github.com/JonatannGuerrero/AutoCustomZSH.git
