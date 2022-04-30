@@ -34,15 +34,13 @@ python3 install.py
 
 # 🧾 Referencias
 
-- *[[1] 	Sergiu Gatlan, «Windows Terminal now can automatically launch profiles as Administrator», 3 Febrero 2022. [Imagen Post]. [En línea].](https://www.bleepingcomputer.com/news/microsoft/windows-terminal-now-can-automatically-launch-profiles-as-administrator/)*
+- *[[1] 	Github: @Peltoche, «LSD (LSDeluxe)», 16 Enero 2022. [En línea].](https://github.com/Peltoche/lsd)*
 
-- *[[2] 	Github: @Peltoche, «LSD (LSDeluxe)», 16 Enero 2022. [En línea].](https://github.com/Peltoche/lsd)*
+- *[[2] 	Github: @junegunn, «fzf Command-line fuzzy finder», 4 abril 2022. [En línea].](https://github.com/junegunn/fzf)*
 
-- *[[3] 	Github: @junegunn, «fzf Command-line fuzzy finder», 4 abril 2022. [En línea].](https://github.com/junegunn/fzf)*
+- *[[3] 	Github: @romkatv, «Powerlevel10k», 2 febrero 2022. [En línea].](https://github.com/romkatv/powerlevel10k)*
 
-- *[[4] 	Github: @romkatv, «Powerlevel10k», 2 febrero 2022. [En línea].](https://github.com/romkatv/powerlevel10k)*
-
-- *[[5] 	Github: @sharkdp, «A cat clone with syntax highlighting and Git integration.», 27 febrero 2022. [En línea].](https://github.com/sharkdp/bat)*
+- *[[4] 	Github: @sharkdp, «A cat clone with syntax highlighting and Git integration.», 27 febrero 2022. [En línea].](https://github.com/sharkdp/bat)*
 # 🔧 Built With
 - Python3
 # 📝 License
