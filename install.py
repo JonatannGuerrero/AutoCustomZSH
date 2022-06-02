@@ -160,6 +160,8 @@ def Option4():
     os.system("sudo cp tools/p10k_conf ~/.p10k.zsh")
     comand="sudo cp tools/p10k_conf /home/"+user+"/.p10k.zsh" 
     os.system(comand)  
+    comand="ln -s -f /home/"+user+"/.p10k.zsh ~/.p10k.zsh"
+    os.system(comand)  
     printGreen("【✔】PowerLevel10k instalada correctamente")
     time.sleep(1.5)   
 
