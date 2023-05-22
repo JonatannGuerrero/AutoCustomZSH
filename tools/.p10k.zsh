@@ -1,1 +1,0 @@
-/home/jonatann/.p10k.zsh
