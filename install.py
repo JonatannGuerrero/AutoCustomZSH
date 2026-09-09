@@ -67,6 +67,65 @@ def signal_handler(sig, frame):
     printYellow("\n【★】Saliendo ...\n")    
     sys.exit(0)
 
+# ---------------------------- Helpers macOS ----------------------------
+# En macOS el script se invoca con sudo, pero Homebrew se niega a correr como
+# root. Estas funciones bajan los privilegios al usuario que invoco sudo.
+
+LSD_VERSION = "1.2.0"   # https://github.com/lsd-rs/lsd/releases
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))   # tools/ no depende del cwd
+
+def mac_home(user):
+    return os.path.expanduser("~"+user)     # /Users/<user>
+
+def brew_bin():
+    for ruta in ("/opt/homebrew/bin/brew", "/usr/local/bin/brew"):
+        if os.path.exists(ruta):
+            return ruta
+    return None
+
+def as_user(user, comand):
+    # -H fija HOME al del usuario; sin esto brew escribiria en /var/root
+    return "sudo -u "+user+" -H "+comand
+
+def brew(user, args):
+    if brew_bin() is None:
+        printRed("【✘】Homebrew no está instalado, ejecute primero la opción 1")
+        return 1
+    return os.system(as_user(user, brew_bin()+" "+args))
+
+def brew_has(user, package, cask=False):
+    if brew_bin() is None:
+        return False
+    flag = "--cask " if cask else ""
+    return os.system(as_user(user, brew_bin()+" list "+flag+"--versions "+package+" > /dev/null 2>&1")) == 0
+
+def brew_install(user, packages, cask=False):
+    # Instala unicamente lo que falta
+    if brew_bin() is None:
+        printRed("【✘】Homebrew no está instalado, ejecute primero la opción 1")
+        return
+    faltantes = []
+    for package in packages:
+        if brew_has(user, package, cask):
+            printYellow("【!】 "+package+" ya esta instalado, se omite")
+        else:
+            faltantes.append(package)
+    if faltantes:
+        flag = "--cask " if cask else ""
+        brew(user, "install "+flag+" ".join(faltantes))
+
+def copy_as_user(user, origen, destino):
+    origen = os.path.join(BASE_DIR, origen)
+    if not os.path.exists(origen):
+        printRed("【✘】No se encontró "+origen)
+        return
+    os.system(as_user(user, "cp '"+origen+"' '"+destino+"'"))
+
+def backup_as_user(user, ruta):
+    if os.path.exists(ruta):
+        printYellow("【!】 Respaldando "+ruta+" en "+ruta+".bak")
+        os.system(as_user(user, "cp '"+ruta+"' '"+ruta+".bak'"))
+
 # Actualizar Sistema
 def UpdateSystem(): 
     printBlue(banner)
@@ -169,7 +228,11 @@ def Option4():
 def Option5():
     printWhite("【!】Obteniendo utilidades ...") 
     os.system("sudo apt install bat -y")
-    os.system("sudo dpkg -i tools/lsd_0.21.0_amd64.deb")
+    arch = os.popen("dpkg --print-architecture").read().strip()
+    url = ("https://github.com/lsd-rs/lsd/releases/download/v"+LSD_VERSION
+           +"/lsd_"+LSD_VERSION+"_"+arch+".deb")
+    printWhite("【!】Descargando lsd "+LSD_VERSION+" ("+arch+") ...")
+    os.system("wget -q -O /tmp/lsd.deb "+url+" && sudo dpkg -i /tmp/lsd.deb")
     comand="git clone --depth 1 https://github.com/junegunn/fzf.git /home/"+user+"/.fzf" # ctrl+r ó ctrl+t
     os.system(comand)
     comand="/home/"+user+"/.fzf/install --all"
@@ -235,20 +298,141 @@ def Linux(Actu):
         os.system("clear")
         menu()
 
-def MacOS():
+# Menu de opciones macOS
+def menuMac():
     printBlue(banner)
-    printYellow("\n【!】Herramienta para MacOS en construcción ...")
-    time.sleep(0.5)
-    printYellow("【★】Saliendo ... \n")
+    print("【1】 » Verificar requerimientos (Homebrew)")
+    print("【2】 » Configurar ZSH")
+    print("【3】 » Instalar plugins ZSH") # ZSH-syntax-highlighting, ZSH-Sudo, ZSH-autosuggestions
+    print("【4】 » Instalar PowerLevel10k")
+    print("【5】 » Instalar utilidades")
+    print("【6】 » Instalar todo")
+    print("【7】 » Salir")
+
+# Opción 1 Requerimientos | git y zsh ya vienen con macOS
+def MacOption1(user):
+    printWhite("【!】Verificando requerimientos ...")
     time.sleep(1)
+    if brew_bin() is None:
+        printRed("\n【✘】Homebrew no está instalado")
+        printYellow("【!】Instálelo SIN sudo y vuelva a ejecutar el script:")
+        printWhite('   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"')
+        time.sleep(2)
+        return False
+    printGreen("【✔】 Homebrew encontrado en "+brew_bin())
+    time.sleep(1)
+    printYellow("【!】 git y zsh ya vienen con macOS, se omiten")
+    printWhite("【!】Actualizando Homebrew ...")
+    brew(user, "update")
+    printGreen("【✔】 Requerimientos listos")
+    time.sleep(1.5)
+    return True
+
+# Opción 2 Configurando ZSH | Shell por defecto
+def MacOption2(user):
+    printWhite("【!】Configurando ZSH ...")
+    time.sleep(1)
+    shell = os.popen("dscl . -read /Users/"+user+" UserShell 2>/dev/null").read()
+    if "/zsh" in shell:
+        printGreen("【✔】 zsh ya es el shell por defecto, se omite")
+    else:
+        printYellow("【!】 Estableciendo zsh como shell por defecto ...")
+        os.system("chsh -s /bin/zsh "+user)
+    zshrc = mac_home(user)+"/.zshrc"
+    backup_as_user(user, zshrc)
+    copy_as_user(user, "tools/zsh_conf_macos", zshrc)
+    printGreen("【✔】 ZSH configurada correctamente")
+    time.sleep(1.5)
+
+# Instalando plugins ZSH
+def MacOption3(user):
+    printWhite("【!】Obteniendo plugins ZSH ...")
+    brew_install(user, ["zsh-syntax-highlighting", "zsh-autosuggestions"])
+    destino = mac_home(user)+"/.zsh/plugins/sudo"
+    os.system(as_user(user, "mkdir -p '"+destino+"'"))
+    plugin = destino+"/sudo.plugin.zsh"
+    if os.path.exists(plugin):
+        printYellow("【!】 zsh-sudo ya está instalado, se omite")
+    else:
+        os.system(as_user(user, "curl -fsSL -o '"+plugin+"' "
+                  "https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/plugins/sudo/sudo.plugin.zsh"))
+    printGreen("【✔】 Plugins configurados e instalados correctamente")
+    time.sleep(1.5)
+
+# Instalando PowerLevel10k
+def MacOption4(user):
+    printWhite("【!】Obteniendo paquetes PowerLevel10k ...")
+    brew_install(user, ["powerlevel10k"])
+    p10k = mac_home(user)+"/.p10k.zsh"
+    backup_as_user(user, p10k)
+    copy_as_user(user, "tools/p10k_conf", p10k)
+    printGreen("【✔】PowerLevel10k instalada correctamente")
+    time.sleep(1.5)
+
+# Instalando LSD, BAT, FZF, Ranger, scrub, coreutils y Nerd Font
+def MacOption5(user):
+    printWhite("【!】Obteniendo utilidades ...")
+    brew_install(user, ["lsd", "bat", "fzf", "ranger", "scrub", "coreutils"])
+    printWhite("【!】Instalando Nerd Font (iconos de PowerLevel10k) ...")
+    brew_install(user, ["font-meslo-lg-nerd-font"], cask=True)
+    printYellow("【!】 Seleccione 'MesloLGS Nerd Font' en las preferencias de su terminal")
+    printGreen("【✔】Utilidades Listas")
+    time.sleep(1.5)
+
+# Configuración macOS
+def MacOS(user):
+    while True:
+        os.system("clear")
+        menuMac()
+        option = input("\n ➤ ")
+        os.system("clear")
+        printBlue(banner)
+        if option=="1":
+            MacOption1(user)
+        elif option=="2":
+            MacOption2(user)
+        elif option=="3":
+            MacOption3(user)
+        elif option=="4":
+            MacOption4(user)
+        elif option=="5":
+            MacOption5(user)
+        elif option=="6":
+            if MacOption1(user):
+                MacOption2(user)
+                MacOption3(user)
+                MacOption4(user)
+                MacOption5(user)
+                printGreen("【★】AutoCustomZSH Done | TheHackNotes.com")
+                time.sleep(1.5)
+            printYellow("【★】Saliendo ...")
+            time.sleep(1)
+            return
+        elif option=="7":
+            printYellow("\n【★】Saliendo ...")
+            time.sleep(1)
+            return
+        else:
+            printRed("\n【✘】Opción invalida")
+            time.sleep(0.8)
+            printYellow("\n【!】Intente nuevamente")
+            time.sleep(1.5)
+            continue
+        input("\n【!】Presione ENTER para volver al menú ...")
 
 if __name__ == '__main__': 
     signal.signal(signal.SIGINT, signal_handler)     
     id = os.getuid()   
     if id == 0:
-        user=os.environ['SUDO_USER']        
+        user=os.environ.get('SUDO_USER')
+        if not user or user=='root':
+            printBlue(banner)
+            printRed("\n【✘】No se pudo determinar el usuario que ejecutó sudo")
+            printYellow("【!】Ejecute el script con: sudo python3 install.py\n")
+            time.sleep(1.3)
+            sys.exit(1)
         if platform.system()=='Darwin':
-            MacOS()
+            MacOS(user)
         elif platform.system()=="Linux":            
             Linux(UpdateSystem())
         else:
@@ -261,7 +445,7 @@ if __name__ == '__main__':
             if option=="1":                
                 Linux(UpdateSystem())
             elif option=="2":
-                MacOS()
+                MacOS(user)
             else:
                 printRed("\n【✘】Opción invalida")
                 time.sleep(0.8)

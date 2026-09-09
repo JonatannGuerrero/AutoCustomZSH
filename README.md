@@ -8,9 +8,23 @@ Para hacer uso del script se debe ejecutar como root, ya que este realiza cambio
 ```bash 
 git clone https://github.com/JonatannGuerrero/AutoCustomZSH.git
 cd AutoCustomZSH/
-python3 install.py
+sudo python3 install.py
 ```
-> 👉 El script fue probado en Kali, Parrot y Ubuntu. Funciona bien para sistemas operativos basados en Debian. *Integración para MacOS en proceso* ... 👨‍💻
+> 👉 El script fue probado en Kali, Parrot y Ubuntu. Funciona bien para sistemas operativos basados en Debian.
+
+### 🍎 macOS
+
+En macOS el script instala todo mediante **Homebrew**, que es un prerrequisito. Si aún no lo tiene, instálelo **sin sudo**:
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+Después ejecute el script con `sudo` igual que en Linux. Homebrew no puede correr como root, así que el script baja los privilegios al usuario que invocó `sudo` para cada instalación.
+
+> 👉 macOS ya trae **zsh** como shell por defecto, por lo que ese paso se omite. El archivo de configuración usado es `tools/zsh_conf_macos`.
+
+> 👉 Para que se vean los iconos de Powerlevel10k debe seleccionar **MesloLGS Nerd Font** en las preferencias de su terminal (Terminal.app o iTerm2). El script instala la fuente, pero no puede seleccionarla por usted.
 
 # 📟 Utilidades
 
